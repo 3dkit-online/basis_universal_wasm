@@ -1,5 +1,8 @@
 # basis_universal
 
+[![Latest NPM release](https://img.shields.io/npm/v/basis_universal_wasm.svg)](https://www.npmjs.com/package/basis_universal_wasm)
+[![Minzipped size](https://badgen.net/bundlephobia/minzip/basis_universal_wasm)](https://bundlephobia.com/result?p=basis_universal_wasm)
+[![Build Status](https://github.com/3dkit-online/basis_universal_wasm/workflows/build/badge.svg?branch=main&event=push)](https://github.com/3dkit-online/basis_universal_wasm/actions?query=workflow%3Abuild)
 ## Installation
 
 ```shell
