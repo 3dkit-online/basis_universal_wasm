@@ -115,6 +115,24 @@ enum transcoder_texture_format {
   cTFATC_RGBA_INTERPOLATED_ALPHA = cTFATC_RGBA
 }
 
+enum basisu_decode_flags {
+  // PVRTC1: decode non-pow2 ETC1S texture level to the next larger power of 2 (not implemented yet, but we're going to support it). Ignored if the slice's dimensions are already a power of 2.
+  cDecodeFlagsPVRTCDecodeToNextPow2 = 2,
+
+  // When decoding to an opaque texture format, if the basis file has alpha, decode the alpha slice instead of the color slice to the output texture format.
+  // This is primarily to allow decoding of textures with alpha to multiple ETC1 textures (one for color, another for alpha).
+  cDecodeFlagsTranscodeAlphaDataToOpaqueFormats = 4,
+
+  // Forbid usage of BC1 3 color blocks (we don't support BC1 punchthrough alpha yet).
+  // This flag is used internally when decoding to BC3.
+  cDecodeFlagsBC1ForbidThreeColorBlocks = 8,
+
+  // The output buffer contains alpha endpoint/selector indices. 
+  // Used internally when decoding formats like ASTC that require both color and alpha data to be available when transcoding to the output format.
+  cDecodeFlagsOutputHasAlphaIndices = 16,
+
+  cDecodeFlagsHighQuality = 32
+};
 
 declare class BasisFile {
   constructor(data: Uint8Array);
@@ -248,6 +266,19 @@ interface BasisImageLevelDesc {
 }
 
 interface BASISUModule extends EmscriptenModule {
+  initializeBasis: () => void;
+
+  BasisFile: new () => BasisFile;
+  KTX2File: new () => KTX2File;
+  LowLevelETC1SImageTranscoder: new () => LowLevelETC1SImageTranscoder;
+  basis_tex_format: basis_tex_format;
+  basis_texture_type: basis_texture_type;
+  basisu_decode_flags: basisu_decode_flags;
+  
+  ktx2_df_channel_id: ktx2_df_channel_id;
+  ktx2_df_color_primaries: ktx2_df_color_primaries;
+  ktx2_supercompression: ktx2_supercompression;
+
   KTX2_VK_FORMAT_UNDEFINED: number;
   KTX2_KDF_DF_MODEL_UASTC: number;
   KTX2_KDF_DF_MODEL_ETC1S: number;
@@ -258,12 +289,18 @@ interface BASISUModule extends EmscriptenModule {
   KTX2_KHR_DF_TRANSFER_LINEAR: number;
   KTX2_KHR_DF_TRANSFER_SRGB: number;
 
-  BasisFile: BasisFile;
-  KTX2File: KTX2File;
-  basis_tex_format: basis_tex_format;
-  ktx2_supercompression: ktx2_supercompression;
-  ktx2_df_channel_id: ktx2_df_channel_id;
-  ktx2_df_color_primaries: ktx2_df_color_primaries;
+  formatHasAlpha: (transcoder_tex_fmt: basis_tex_format) => boolean;
+  formatIsUncompressed: (transcoder_tex_fmt: basis_tex_format) => boolean;
+  getBytesPerBlockOrPixel: (transcoder_tex_fmt: basis_tex_format) => number;
+  getFormatBlockHeight: (transcoder_tex_fmt: basis_tex_format) => number;
+  getFormatBlockWidth: (transcoder_tex_fmt: basis_tex_format) => number;
+  isFormatSupported: (transcoder_tex_fmt: basis_tex_format) => boolean;
+
+  transcodeUASTCImage: (target_format_int: transcoder_texture_format, output_blocks: Uint8Array, output_blocks_buf_size_in_blocks_or_pixels: number, compressed_data: Uint8Array, num_blocks_x: number, num_blocks_y: number, orig_width: number, orig_height: number, level_index: number, slice_offset: number, decode_flags: basisu_decode_flags, has_alpha: boolean, is_video: boolean, output_row_pitch_in_blocks_or_pixels: number, channel0: number, channel1: number) => number;
+  transcoderSupportsKTX2: () => boolean;
+  transcoderSupportsKTX2Zstd: () => boolean;
+
+  transcoder_texture_format:transcoder_texture_format;
 }
 
 declare class BasisEncoder {
@@ -302,8 +339,7 @@ declare class BasisEncoder {
 }
 
 interface BasisEncoderModule extends BASISUModule {
-  initializeBasis:()=>void;
-  BasisEncoder: BasisEncoder;
+  BasisEncoder: new () => BasisEncoder;
   BASISU_MAX_SUPPORTED_TEXTURE_DIMENSION: number;
   BASISU_DEFAULT_ENDPOINT_RDO_THRESH: number;
   BASISU_DEFAULT_SELECTOR_RDO_THRESH: number;
@@ -327,8 +363,6 @@ interface BasisEncoderModule extends BASISUModule {
 }
 
 interface BasisTranscoderModule extends BASISUModule {
-  initializeBasis:()=>void;
-  LowLevelETC1SImageTranscoder: LowLevelETC1SImageTranscoder;
   BASISU_MAX_SUPPORTED_TEXTURE_DIMENSION: number;
   BASISU_DEFAULT_ENDPOINT_RDO_THRESH: number;
   BASISU_DEFAULT_SELECTOR_RDO_THRESH: number;
@@ -351,8 +385,10 @@ interface BasisTranscoderModule extends BASISUModule {
   UASTC_RDO_DEFAULT_SKIP_BLOCK_RMS_THRESH: number;
 }
 
-class LowLevelETC1SImageTranscoder{
-
-} 
+declare class LowLevelETC1SImageTranscoder {
+  constructor();
+  decodePalettes: (num_endpoints: number, endpoint_data: Uint8Array, num_selectors: number, selector_data: Uint8Array) => boolean;
+  decode_tables: (table_data: Uint8Array) => boolean;
+}
 
 declare function BASIS(): BasisEncoderModule;
