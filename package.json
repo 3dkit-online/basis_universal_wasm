@@ -11,6 +11,12 @@
     "email": "3dkit.online@gmail.com"
   },
   "type": "module",
+  "files": [
+    "dist/",
+    "readme.md",
+    "package.json",
+    "package-lock.json"
+  ],
   "keywords": [
     "image",
     "optimisation",
