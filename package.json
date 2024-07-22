@@ -1,6 +1,6 @@
 {
   "name": "basis_universal_wasm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./dist/basis_universal_wasm.js",
   "types": "./dist/basis_universal_wasm.d.ts",
   "module": "./dist/basis_universal_wasm.js",
