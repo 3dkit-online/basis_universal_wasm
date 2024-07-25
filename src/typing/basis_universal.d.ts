@@ -1,4 +1,4 @@
-enum basis_tex_format {
+declare enum basis_tex_format {
   cETC1S,
   cUASTC4x4,
 }
@@ -51,7 +51,7 @@ declare enum basis_texture_type {
   cBASISTexTypeTotal
 }
 
-enum transcoder_texture_format {
+declare enum transcoder_texture_format {
   // Compressed formats
 
   // ETC1-2
@@ -115,7 +115,7 @@ enum transcoder_texture_format {
   cTFATC_RGBA_INTERPOLATED_ALPHA = cTFATC_RGBA
 }
 
-enum basisu_decode_flags {
+declare enum basisu_decode_flags {
   // PVRTC1: decode non-pow2 ETC1S texture level to the next larger power of 2 (not implemented yet, but we're going to support it). Ignored if the slice's dimensions are already a power of 2.
   cDecodeFlagsPVRTCDecodeToNextPow2 = 2,
 
@@ -132,7 +132,7 @@ enum basisu_decode_flags {
   cDecodeFlagsOutputHasAlphaIndices = 16,
 
   cDecodeFlagsHighQuality = 32
-};
+}
 
 declare class BasisFile {
   constructor(data: Uint8Array);

@@ -1,6 +1,6 @@
 {
   "name": "basis_universal_wasm",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./dist/basis_universal_wasm.js",
   "types": "./dist/basis_universal_wasm.d.ts",
   "module": "./dist/basis_universal_wasm.js",
@@ -32,8 +32,10 @@
   "scripts": {
     "build": "vite build"
   },
+  "dependencies": {
+    "@types/emscripten": "^1.39.13"
+  },
   "devDependencies": {
-    "@types/emscripten": "^1.39.13",
     "typescript": "^5.5.3",
     "vite": "^5.3.4",
     "vite-plugin-dts": "^4.0.0-beta.1"
