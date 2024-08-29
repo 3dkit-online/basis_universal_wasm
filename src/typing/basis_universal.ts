@@ -137,6 +137,7 @@ declare enum basisu_decode_flags {
 declare class BasisFile {
   constructor(data: Uint8Array);
   close: () => void;
+  delete: () => void;
   getHasAlpha: () => void;
   getNumImages: () => number;
   getNumLevels: (image_index: number) => number;
@@ -157,6 +158,7 @@ declare class KTX2File {
   constructor(data: Uint8Array);
   isValid: () => boolean;
   close: () => void;
+  delete: () => void;
   getDFDSize: () => number;
   getDFD: (dst: Uint8Array) => number;
   getHeader: () => KTX2Header;
@@ -189,7 +191,7 @@ declare class KTX2File {
   transcodeImage: (dst: Uint8Array, level_index: number, layer_index: number, face_index: number, format: transcoder_texture_format, get_alpha_for_opaque_formats: number, channel0: number, channel1: number) => number;
 }
 
-interface KTX2Header {
+export interface KTX2Header {
   vkFormat: number
   typeSize: number
   pixelWidth: number
@@ -207,7 +209,7 @@ interface KTX2Header {
   sgdByteLength: number
 }
 
-interface KTX2ImageLevelInfo {
+export interface KTX2ImageLevelInfo {
   levelIndex: number;
   layerIndex: number;
   faceIndex: number;
@@ -221,7 +223,7 @@ interface KTX2ImageLevelInfo {
   iframeFlag: boolean;
 }
 
-interface BasisFileDesc {
+export interface BasisFileDesc {
   version: number,
   usPerFrame: number,
   totalImages: number,
@@ -243,7 +245,7 @@ interface BasisFileDesc {
   tablesLen: number
 }
 
-interface BasisImageDesc {
+export interface BasisImageDesc {
   origWidth: number;
   origHeight: number;
   numBlocksX: number;
@@ -255,7 +257,7 @@ interface BasisImageDesc {
   iframeFlag: boolean;
 }
 
-interface BasisImageLevelDesc {
+export interface BasisImageLevelDesc {
   // File offset/length of the compressed ETC1S or UASTC texture data.
   rgbFileOfs: number;
   rgbFileLen: number;
@@ -265,7 +267,7 @@ interface BasisImageLevelDesc {
   alphaFileLen: number;
 }
 
-interface BASISUModule extends EmscriptenModule {
+export interface BASISUModule extends EmscriptenModule {
   initializeBasis: () => void;
 
   BasisFile: new () => BasisFile;
@@ -274,7 +276,7 @@ interface BASISUModule extends EmscriptenModule {
   basis_tex_format: basis_tex_format;
   basis_texture_type: basis_texture_type;
   basisu_decode_flags: basisu_decode_flags;
-  
+
   ktx2_df_channel_id: ktx2_df_channel_id;
   ktx2_df_color_primaries: ktx2_df_color_primaries;
   ktx2_supercompression: ktx2_supercompression;
@@ -300,7 +302,7 @@ interface BASISUModule extends EmscriptenModule {
   transcoderSupportsKTX2: () => boolean;
   transcoderSupportsKTX2Zstd: () => boolean;
 
-  transcoder_texture_format:transcoder_texture_format;
+  transcoder_texture_format: transcoder_texture_format;
 }
 
 declare class BasisEncoder {
@@ -338,7 +340,7 @@ declare class BasisEncoder {
   setPackUASTCFlags: (pack_uastc_flags: number) => void;
 }
 
-interface BasisEncoderModule extends BASISUModule {
+export interface BasisEncoderModule extends BASISUModule {
   BasisEncoder: new () => BasisEncoder;
   BASISU_MAX_SUPPORTED_TEXTURE_DIMENSION: number;
   BASISU_DEFAULT_ENDPOINT_RDO_THRESH: number;
@@ -362,7 +364,7 @@ interface BasisEncoderModule extends BASISUModule {
   UASTC_RDO_DEFAULT_SKIP_BLOCK_RMS_THRESH: number;
 }
 
-interface BasisTranscoderModule extends BASISUModule {
+export interface BasisTranscoderModule extends BASISUModule {
   BASISU_MAX_SUPPORTED_TEXTURE_DIMENSION: number;
   BASISU_DEFAULT_ENDPOINT_RDO_THRESH: number;
   BASISU_DEFAULT_SELECTOR_RDO_THRESH: number;

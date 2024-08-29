@@ -3,6 +3,9 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": [
+      "@types/emscripten"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "allowJs": true,
